@@ -334,6 +334,20 @@ class GoogleSitemapGeneratorUI {
 
 					}
 				//Options of the category "Includes" are boolean
+				} else if(substr($k,0,15)=="sm_cf_customtax" ) {
+					$taxonomy = str_replace('sm_cf_customtax', '', $k);
+					$taxonomy = str_replace('[', '', str_replace(']', '', $taxonomy));
+
+					if( isset($_POST['sm_cf_customtax'][$taxonomy]) )
+						$this->sg->SetOption($k, $_POST['sm_cf_customtax'][$taxonomy]);
+
+				}else if(substr($k,0,15)=="sm_pr_customtax" ) {
+					$taxonomy = str_replace('sm_pr_customtax', '', $k);
+					$taxonomy = str_replace('[', '', str_replace(']', '', $taxonomy));
+
+					if( isset($_POST['sm_pr_customtax'][$taxonomy]) )
+						$this->sg->SetOption($k, $_POST['sm_pr_customtax'][$taxonomy]);
+
 				} else if(substr($k,0,17)=="sm_cf_customtypes" ) {
 					$post_type = str_replace('sm_cf_customtypes', '', $k);
 					$post_type = str_replace('[', '', str_replace(']', '', $post_type));
@@ -1229,7 +1243,21 @@ HTML;
 								<li>
 									<label for="sm_<?php echo $key ?>">
 										<select id="sm_<?php echo $key ?>" name="sm_<?php echo $key ?>"><?php $this->HtmlGetFreqNames($this->sg->GetOption($key)); ?></select>
-										<?php echo $post_type_object->label ?>
+										<?php _e('Post type', 'sitemap') ?> <?php echo $post_type_object->label ?>
+									</label>
+								</li>
+								<?php
+							}
+							?>
+							<?php
+							foreach ($taxonomies as $taxName) {
+								$taxonomy = get_taxonomy($taxName);
+								$key = 'cf_customtax['.$taxonomy->name.']';
+								?>
+								<li>
+									<label for="sm_<?php echo $key ?>">
+										<select id="sm_<?php echo $key ?>" name="sm_<?php echo $key ?>"><?php $this->HtmlGetFreqNames($this->sg->GetOption($key)); ?></select>
+										<?php _e('Taxonomy', 'sitemap') ?> <?php echo $taxonomy->label ?>
 									</label>
 								</li>
 								<?php
@@ -1300,7 +1328,21 @@ HTML;
 								<li>
 									<label for="sm_<?php echo $key ?>">
 										<select id="sm_<?php echo $key ?>" name="sm_<?php echo $key ?>"><?php $this->HtmlGetPriorityValues($this->sg->GetOption($key)); ?></select>
-										<?php echo $post_type_object->label ?>
+										<?php _e('Post type', 'sitemap') ?> <?php echo $post_type_object->label ?>
+									</label>
+								</li>
+								<?php
+							}
+							?>
+							<?php
+							foreach ($taxonomies as $taxName) {
+								$taxonomy = get_taxonomy($taxName);
+								$key = 'pr_customtax['.$taxonomy->name.']';
+								?>
+								<li>
+									<label for="sm_<?php echo $key ?>">
+										<select id="sm_<?php echo $key ?>" name="sm_<?php echo $key ?>"><?php $this->HtmlGetPriorityValues($this->sg->GetOption($key)); ?></select>
+										<?php _e('Taxonomy', 'sitemap') ?> <?php echo $taxonomy->label ?>
 									</label>
 								</li>
 								<?php

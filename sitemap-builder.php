@@ -13,8 +13,6 @@
  */
 class GoogleSitemapGeneratorStandardBuilder {
 
-	private $sg;
-
 	/**
 	 * Creates a new GoogleSitemapGeneratorStandardBuilder instance
 	 */
@@ -22,8 +20,6 @@ class GoogleSitemapGeneratorStandardBuilder {
 		add_action("sm_build_index", array($this, "Index"), 10, 1);
 		add_action("sm_build_content", array($this, "Content"), 10, 3);
 		add_filter("sm_sitemap_for_post", array($this, "GetSitemapUrlForPost"), 10, 3);
-
-		$this->sg = GoogleSitemapGenerator::GetInstance();
 	}
 
 	/**
@@ -212,7 +208,7 @@ class GoogleSitemapGeneratorStandardBuilder {
 						elseif( $postType == 'post' )
 							$priority = $defaultPriorityForPosts;
 						else{
-							$priority = $this->sg->GetOption('pr_customtypes['.$postType.']');
+							$priority = $gsg->GetOption('pr_customtypes['.$postType.']');
 						}
 
 						//Default Priority if auto calc is disabled
@@ -221,7 +217,7 @@ class GoogleSitemapGeneratorStandardBuilder {
 						elseif( $postType == 'post' )
 							$changeFrequency = $changeFrequencyForPosts;
 						else{
-							$changeFrequency = $this->sg->GetOption('cf_customtypes['.$postType.']');
+							$changeFrequency = $gsg->GetOption('cf_customtypes['.$postType.']');
 						}
 
 						$changeFrequency = is_null($changeFrequency)?$changeFrequencyForPosts:$changeFrequency;
@@ -429,7 +425,14 @@ class GoogleSitemapGeneratorStandardBuilder {
 			remove_filter("get_terms_fields", array($this, "FilterTermsQuery"), 20, 2);
 
 			foreach($terms AS $term) {
-				$gsg->AddUrl(get_term_link($term, $term->taxonomy), $term->_mod_date, $gsg->GetOption("cf_tags"), $gsg->GetOption("pr_tags"));
+
+				$priority = $gsg->GetOption('pr_customtax['.$term->taxonomy.']');
+				$priority = is_null($priority)?$gsg->GetOption("pr_tags"):$priority;
+
+				$changeFrequency = $gsg->GetOption('cf_customtax['.$term->taxonomy.']');
+				$changeFrequency = is_null($changeFrequency)?$gsg->GetOption("cf_tags"):$changeFrequency;
+
+				$gsg->AddUrl(get_term_link($term, $term->taxonomy), $term->_mod_date, $changeFrequency, $priority);
 			}
 		}
 	}

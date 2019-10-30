@@ -1206,6 +1206,16 @@ final class GoogleSitemapGenerator {
 				$this->options['sm_cf_customtypes['.$post_type_object->name.']'] = "weekly";
 			}
 		}
+
+		if($sg->IsTaxonomySupported()) {
+			$taxonomies = $sg->GetCustomTaxonomies();
+
+			foreach ($taxonomies as $taxonomy) {
+				$taxonomy = get_taxonomy($taxonomy);
+				$this->options['sm_pr_customtax['.$taxonomy->name.']'] = 0.3;
+				$this->options['sm_cf_customtax['.$taxonomy->name.']'] = "weekly";
+			}
+		}
 	}
 
 	/**

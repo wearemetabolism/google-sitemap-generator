@@ -79,6 +79,7 @@ The WordPress.org repository is just another place to download this plugin. I do
 
 = 4.2.0 (2019-10-30) =
 * Added priority and change frequency support for custom post types
+* Added priority and change frequency support for custom taxonomies
 * Added filter `sm_get_role` to allow capability modification for add_options_page
 * Added composer.json
 
