@@ -1,7 +1,7 @@
 <?php
 /*
 
- $Id$
+ $Id: sitemap-builder.php 1026247 2014-11-15 16:47:36Z arnee $
 
 */
 /**
@@ -13,14 +13,17 @@
  */
 class GoogleSitemapGeneratorStandardBuilder {
 
+	private $sg;
+
 	/**
 	 * Creates a new GoogleSitemapGeneratorStandardBuilder instance
 	 */
 	public function __construct() {
 		add_action("sm_build_index", array($this, "Index"), 10, 1);
 		add_action("sm_build_content", array($this, "Content"), 10, 3);
-
 		add_filter("sm_sitemap_for_post", array($this, "GetSitemapUrlForPost"), 10, 3);
+
+		$this->sg = GoogleSitemapGenerator::GetInstance();
 	}
 
 	/**
@@ -195,15 +198,6 @@ class GoogleSitemapGeneratorStandardBuilder {
 					//Full URL to the post
 					$permalink = get_permalink($post);
 
-					/**
-					 * Filters the permalink of the current post
-					 * @since 2.7.0
-					 * @param string $permalink The permalink
-					 * @param WP_Post $post The post
-					 */
-					$permalink = apply_filters('sm_post_permalink', $permalink, $post);
-
-
 					//Exclude the home page and placeholder items by some plugins. Also include only internal links.
 					if(
 						!empty($permalink)
@@ -213,7 +207,24 @@ class GoogleSitemapGeneratorStandardBuilder {
 					) {
 
 						//Default Priority if auto calc is disabled
-						$priority = ($postType == 'page' ? $defaultPriorityForPages : $defaultPriorityForPosts);
+						if( $postType == 'page' )
+							$priority = $defaultPriorityForPages;
+						elseif( $postType == 'post' )
+							$priority = $defaultPriorityForPosts;
+						else{
+							$priority = $this->sg->GetOption('pr_customtypes['.$postType.']');
+						}
+
+						//Default Priority if auto calc is disabled
+						if( $postType == 'page' )
+							$changeFrequency = $changeFrequencyForPages;
+						elseif( $postType == 'post' )
+							$changeFrequency = $changeFrequencyForPosts;
+						else{
+							$changeFrequency = $this->sg->GetOption('cf_customtypes['.$postType.']');
+						}
+
+						$changeFrequency = is_null($changeFrequency)?$changeFrequencyForPosts:$changeFrequency;
 
 						//If priority calc. is enabled, calculate (but only for posts, not pages)!
 						if($priorityProvider !== null && $postType == 'post') {
@@ -227,8 +238,7 @@ class GoogleSitemapGeneratorStandardBuilder {
 						$gsg->AddUrl(
 							$permalink,
 							$gsg->GetTimestampFromMySql($post->post_modified_gmt && $post->post_modified_gmt != '0000-00-00 00:00:00'? $post->post_modified_gmt : $post->post_date_gmt),
-							($postType == 'page' ? $changeFrequencyForPages : $changeFrequencyForPosts),
-							$priority, $post->ID);
+							$changeFrequency, $priority, $post->ID);
 					}
 
 					//Why not use clean_post_cache? Because some plugin will go crazy then (lots of database queries)

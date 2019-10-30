@@ -1,0 +1,15 @@
+{
+  "version": "4.2.0",
+  "name": "arnee/google-sitemap-generator",
+  "description": "This generator will create a sitemaps.org compliant sitemap of your WordPress blog.",
+  "homepage": "https://github.com/wp-plugins/google-sitemap-generator",
+  "authors": [
+    {
+      "name": "Arne Brachhold"
+    }
+  ],
+  "type": "wordpress-plugin",
+  "require": {
+    "composer/installers": "~1.0"
+  }
+}

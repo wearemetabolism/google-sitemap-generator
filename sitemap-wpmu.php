@@ -1,7 +1,7 @@
 <?php
 
 /*
- * $Id$
+ * $Id: sitemap-wpmu.php 534582 2012-04-21 22:25:36Z arnee $
  *
  * Google XML Sitemaps Generator for WordPress MU activation
  * ==============================================================================
@@ -16,7 +16,7 @@
  * | | | - sitemap.php
  * | | | - [...]
  *
- * All files in the mu-plugins directory are included for all blogs by WordPress by default, so there is no need to
+ * All files in the mu-plugins directory are included for all sites by WordPress by default, so there is no need to
  * activate this plugin anymore (and it also can not be deactivated).
  */
 
